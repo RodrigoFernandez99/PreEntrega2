@@ -5,8 +5,10 @@ import cartsRouter from './routers/carts.router.js';
 import __dirname from './utils.js';
 import viewsRouter from './routers/view.router.js'  
 import { Server } from 'socket.io';
-import mongoose from 'mongoose';
 import  ProductManager  from './managers/ProductManager.js'
+import mongoose from 'mongoose';
+import session from 'express-session';
+import MongoStore from 'connect-mongo';
 
 const app = express();
 
@@ -36,6 +38,8 @@ async function startServer() {
     app.use('/', viewsRouter);
     app.use('/api/products', productsRouter);
     app.use('/api/carts', cartsRouter);
+    
+    app.use('/api/sessions', sessionsRouter);
 
     io.on("connection", (socket) => {
       console.log("Connection with socket:", socket.id);
@@ -54,6 +58,16 @@ async function startServer() {
       });
     });
 
+    app.use(session({
+      store: MongoStore.create({
+          client: mongoose.connection.getClient(),
+          ttl: 3600
+      }),
+      secret: 'Coder39760',
+      resave: true,
+      saveUninitialized: true
+  }))
+
     try {
       await mongoose.connect('mongodb+srv://RodrigoFernandez:<typny39c9zqeYQTJ>@preentrega.0uv4pkb.mongodb.net/?retryWrites=true&w=majority');
       console.log('DB CONNECTED');
@@ -62,5 +76,6 @@ async function startServer() {
     }
   });
 }
+
 
 startServer();
