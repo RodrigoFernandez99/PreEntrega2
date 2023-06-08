@@ -59,4 +59,5 @@ router.get('/products', privateAccess, (req, res) => {
   });
 });
 
+
 export default router;

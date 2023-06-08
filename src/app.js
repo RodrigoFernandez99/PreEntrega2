@@ -9,6 +9,8 @@ import  ProductManager  from './managers/ProductManager.js'
 import mongoose from 'mongoose';
 import session from 'express-session';
 import MongoStore from 'connect-mongo';
+import passport from 'passport';
+import initializePassport from './config/passport.config.js';
 
 const app = express();
 
@@ -75,7 +77,10 @@ async function startServer() {
       console.log(error);
     }
   });
-}
 
+  initializePassport();
+app.use(passport.initialize());
+app.use(passport.session());
+}
 
 startServer();
